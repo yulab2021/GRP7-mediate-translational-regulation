@@ -1,0 +1,10 @@
+
+##For CLIP-seq data
+#quality control
+fastp -i SampleName_R1.fq.gz -I SampleName_R2.fq.gz -o clean.SampleName_R1.fq.gz -O clean.SampleName_R2.fq.gz -w 8 -a TGGAATTCTCGG --adapter_sequence_r2 GATCGTCGGACT 
+
+#mapping using STAR
+STAR --outFilterMismatchNmax 2 --runThreadN 8 --genomeDir tair10_STARindex --readFilesIn clean.SampleName_R1.fq.gz clean.SampleName_R2.fq.gz --readFilesCommand zcat --outSAMtype BAM SortedByCoordinate --outFileNamePrefix SampleName  
+
+#peak calling using CLIPper
+clipper -b SampleName.bam -o SampleName.bed -s ath

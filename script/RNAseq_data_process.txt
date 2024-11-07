@@ -1,0 +1,12 @@
+##For RNA-seq data
+#quality control
+fastp -i SampleName_R1.fq.gz -I SampleName_R2.fq.gz -o clean.SampleName_R1.fq.gz -O clean.SampleName_R2.fq.gz --detect_adapter_for_pe -w 8 --compression 9 -c -h SampleName.html -j SampleName.json
+
+#mapping using STAR
+STAR --runThreadN 8 --genomeDir tair10_STARindex --readFilesIn clean.SampleName_R1.fq.gz clean.SampleName_R2.fq.gz --readFilesCommand zcat --outSAMtype BAM SortedByCoordinate --outFileNamePrefix SampleName
+
+#count using featureCount
+featureCounts -T 8 -t exon -p -P -B -C -g gene_id -a tair10.gtf -o SampleName.featurecount.txt SampleName.bam
+
+#DEG analyze
+perl trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/run_DE_analysis.pl --matrix rna.rawcount.txt --method DESeq2 --samples_file sample.group.txt --output deseq2 --contrasts compare.txt
