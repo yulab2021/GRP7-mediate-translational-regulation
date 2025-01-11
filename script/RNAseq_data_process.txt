@@ -6,7 +6,15 @@ fastp -i SampleName_R1.fq.gz -I SampleName_R2.fq.gz -o clean.SampleName_R1.fq.gz
 STAR --runThreadN 8 --genomeDir tair10_STARindex --readFilesIn clean.SampleName_R1.fq.gz clean.SampleName_R2.fq.gz --readFilesCommand zcat --outSAMtype BAM SortedByCoordinate --outFileNamePrefix SampleName
 
 #count using featureCount
-featureCounts -T 8 -t exon -p -P -B -C -g gene_id -a tair10.gtf -o SampleName.featurecount.txt SampleName.bam
+#featureCounts -T 8 -t exon -p -P -B -C -g gene_id -a tair10.gtf -o SampleName.featurecount.txt SampleName.bam
+featureCounts -T 8 -t CDS -p -P -B -C -g gene_id -a "/home/wenna/genome/Arabidopsis_thaliana.TAIR10.57.gtf"  -o RNAseq_CDS.featurecount.txt *RNA.Aligned.sortedByCoord.out.bam
+featureCounts -T 8 -t five_prime_utr -p -P -B -C -g gene_id -a "/home/wenna/genome/Arabidopsis_thaliana.TAIR10.57.gtf"  -o RNAseq_5UTR.featurecount.txt *RNA.Aligned.sortedByCoord.out.bam
+featureCounts -T 8 -t three_prime_utr -p -P -B -C -g gene_id -a "/home/wenna/genome/Arabidopsis_thaliana.TAIR10.57.gtf"  -o RNAseq_3UTR.featurecount.txt *RNA.Aligned.sortedByCoord.out.bam
+
+awk 'BEGIN{FS=OFS="\t"}!/#/{print $1,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18}' RNAseq_CDS.featurecount.txt > RNAseq_CDS.featurecount1.txt
+awk 'BEGIN{FS=OFS="\t"}!/#/{print $1,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18}' RNAseq_5UTR.featurecount.txt > RNAseq_5UTR.featurecount1.txt
+awk 'BEGIN{FS=OFS="\t"}!/#/{print $1,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18}' RNAseq_3UTR.featurecount.txt > RNAseq_3UTR.featurecount1.txt
+
 
 #DEG analyze
-perl trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/run_DE_analysis.pl --matrix rna.rawcount.txt --method DESeq2 --samples_file sample.group.txt --output deseq2 --contrasts compare.txt
+#perl trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/run_DE_analysis.pl --matrix rna.rawcount.txt --method DESeq2 --samples_file sample.group.txt --output deseq2 --contrasts compare.txt

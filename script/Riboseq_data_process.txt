@@ -9,7 +9,21 @@ bowtie2 --very-sensitive-local --no-unal -p 8 -x ./ensembl_ncRNA/ncRNA_bowtie2 -
 STAR --outFilterType BySJout --runThreadN 8 --outFilterMismatchNmax 2 --genomeDir tair10_STARindex --readFilesIn clean.ncRNArm.SampleName_R1.fq.gz --outFileNamePrefix SampleName --outSAMtype BAM SortedByCoordinate --quantMode TranscriptomeSAM GeneCounts --outFilterMultimapNmax 1 --outFilterMatchNmin 14 --alignEndsType EndToEnd --readFilesCommand zcat
 
 #count using featureCount
-featureCounts -T 8 -t exon -g gene_id -a tair10.gtf -o SampleName.featurecount.txt SampleName.bam 
+#featureCounts -T 8 -t exon -g gene_id -a tair10.gtf -o SampleName.featurecount.txt SampleName.bam 
+featureCounts -T 8 -t CDS -g gene_id -a ../Ath.Chr.gtf -o Riboseq_CDS.featurecount.txt *Aligned.sortedByCoord.out.bam
+featureCounts -T 8 -t five_prime_utr -g gene_id -a ../Ath.Chr.gtf -o Riboseq_5UTR.featurecount.txt *Aligned.sortedByCoord.out.bam
+featureCounts -T 8 -t three_prime_utr -g gene_id -a ../Ath.Chr.gtf -o Riboseq_3UTR.featurecount.txt *Aligned.sortedByCoord.out.bam
+
+awk 'BEGIN{FS=OFS="\t"}!/#/{print $1,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18}' Riboseq_CDS.featurecount.txt > Riboseq_CDS.featurecount1.txt
+awk 'BEGIN{FS=OFS="\t"}!/#/{print $1,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18}' Riboseq_5UTR.featurecount.txt > Riboseq_5UTR.featurecount1.txt
+awk 'BEGIN{FS=OFS="\t"}!/#/{print $1,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18}' Riboseq_3UTR.featurecount.txt > Riboseq_3UTR.featurecount1.txt
+
+
 
 #DEG analyze
-perl trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/run_DE_analysis.pl --matrix ribo.rawcount.txt --method DESeq2 --samples_file sample.group.txt --output deseq2 --contrasts compare.txt
+#perl trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/run_DE_analysis.pl --matrix ribo.rawcount.txt --method DESeq2 --samples_file sample.group.txt --output deseq2 --contrasts compare.txt
+
+
+
+
+
